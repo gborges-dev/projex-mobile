@@ -8,44 +8,19 @@ import { Dimensions, FlatList, StyleSheet, Text } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
+
 export default function Dashboard() {
     const [dashboard, setDashboard] = useState('');
-
-    useEffect(() => {
-      const handleCadastro = async () => {
-        const novoPais = {
-          nome,
-          sigla,
-          populacao
-        };
-    
-      if (isEdicao) {
-          axios.put(`http://localhost:8080/api/paises/${route.params.pais.id}`, novoPais)
-          .then(response => {
-          console.log('Alteração realizada com sucesso!', response.data);
-          // Limpar os campos do formulário após o cadastro
-          setNome('');
-          setSigla('');
-          setPopulacao('');
-        })
-        .catch(error => {
-          console.error('Erro ao editar:', error);
-        });
-      } else {
-          axios.post('http://localhost:8080/api/paises', novoPais)
-          .then(response => {
-            console.log('Cadastro realizado com sucesso!', response.data);
-            // Limpar os campos do formulário após o cadastro
-            setNome('');
-            setSigla('');
-            setPopulacao('');
-          })
-          .catch(error => {
-            console.error('Erro ao cadastrar:', error);
-          });
-      }    
-    };
-    })
+    const axios = require('axios').default;
+    useEffect(() => {    
+      axios.get(`http://localhost:8080/api/dashboard/`)
+      .then(response => {
+        debugger
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    });
 
     const projetos = [{
         numero: 12345,
