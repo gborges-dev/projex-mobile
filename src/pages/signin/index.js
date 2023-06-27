@@ -1,10 +1,12 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import { Text, View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 import * as Animatable from 'react-native-animatable';
 import { AuthContext } from '../../context/AuthContext';
 
-export default function SignIn({navigation}) {
+export default function SignIn ({navigation}) {
+    const [user, setUser] = useState('');
+    const [password, setPassword] = useState('')
     const {login} = useContext(AuthContext);
 
     return (
@@ -18,17 +20,22 @@ export default function SignIn({navigation}) {
             <Animatable.View animation="fadeInUp" style={styles.containerForm}>
                 <Text style={styles.title}>E-mail</Text>
                 <TextInput
-                placeholder='Digite um e-mail...'
-                keyboardType='email-address'
-                style={styles.input}/>
+                placeholder='Digite seu usuário...'
+                style={styles.input}
+                value={user}
+                onChangeText={text => setUser(text)}/>
                 
                 <Text style={styles.title}>Senha</Text>
                 <TextInput
                 placeholder='Sua senha... '
                 secureTextEntry={true}
-                style={styles.input}/>
+                style={styles.input}
+                value={password}
+                onChangeText={text => setPassword(text)}/>
 
-                <TouchableOpacity style={styles.button} onPress={ () => navigation.navigate('Tabs')}>
+                <TouchableOpacity style={styles.button} onPress={ () => {
+                    login(user, password)
+                    }}>
                     <Text style={styles.buttonText}>
                        Acessar 
                     </Text>

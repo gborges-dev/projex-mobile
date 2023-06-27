@@ -1,9 +1,9 @@
 import React from 'react';
-import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 
 import * as Animatable from 'react-native-animatable';
 
-export default function Welcome({navigation}) {
+export default function Welcome ({navigation}) {
     return (
         <View style={styles.container}>
             <View style={styles.containerLogo}>

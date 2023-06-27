@@ -2,98 +2,136 @@ import React, { useEffect, useState } from "react";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import * as Animatable from 'react-native-animatable';
 import { View } from "react-native-animatable";
-import { Dimensions, FlatList, StyleSheet, Text } from "react-native";
+import { Dimensions, StyleSheet, Text } from "react-native";
+
+import axios from 'axios';
+
+import * as Animatable from 'react-native-animatable';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Tab = createBottomTabNavigator();
 
+const Dashboard = () => {
+  const [acoes, setAcoes] = useState({});
+  const [projetos, setProjetos] = useState({});
+  const [token, setToken] = useState('');
 
-export default function Dashboard() {
-    const [dashboard, setDashboard] = useState('');
-    const axios = require('axios').default;
-    useEffect(() => {    
-      axios.get(`http://localhost:8080/api/dashboard/`)
+  //UTILIZAR O ASYNCSTORAGE QUANDO FOR UTILIZAR O CELULAR PARA CONSUMIR A API
+  
+    useEffect(() => {
+      axios.get('http://localhost:8080/api/dashboard/', { headers: {'Authorization': `Bearer ${localStorage.userToken}` } })
       .then(response => {
-        debugger
+        setAcoes(response.data.acoes)
+        setProjetos(response.data.projetos)
       })
       .catch(error => {
         console.error(error);
       });
-    });
+    }, []);
 
-    const projetos = [{
-        numero: 12345,
-        nome: 'Projeto: Menos lixos nas ruas',
-        status: 'Finalizado'
-    }]
-
-    const renderProjetos = ({ item }) => (
-        <View style={styles.card}>
-          <Text style={styles.label}>Nº:</Text>
-          <Text style={styles.label}>Nome:</Text>
-          <Text style={styles.text}>{item.nome}</Text>
-          <View>
-                <Text>
-                    {item.status}
-                </Text>
-          </View>
+    return (
+      <View style={styles.containerPai}>
+        <View style={styles.containerMae}>
+        <Text style={styles.title}>Dashboard</Text>
         </View>
-      );
+         <View style={styles.container}>
+           <Animatable.View animation="fadeInUp" delay={500} style={styles.containerCardsAcoes}>
+           <Text style={styles.label}>Ações</Text>
+           <View style={styles.card}>
+               <Text style={styles.labelCard}>Abertos</Text>
+               <Text style={styles.text}>{acoes.Aberto}</Text>
+             </View>
+             <View style={styles.card}>
+               <Text style={styles.labelCard}>Cancelados</Text>
+               <Text style={styles.text}>{acoes.Cancelado}</Text>
+             </View>
+             <View style={styles.card}>
+               <Text style={styles.labelCard}>Finalizados</Text>
+               <Text style={styles.text}>{acoes.Finalizado}</Text>
+             </View>
+             <View style={styles.card}>
+               <Text style={styles.labelCard}>Iniciados</Text>
+               <Text style={styles.text}>{acoes.Iniciado}</Text>
+             </View>
+             <View style={styles.card}>
+               <Text style={styles.labelCard}>Pausados</Text>
+               <Text style={styles.text}>{acoes.Pausado}</Text>
+             </View>
+           </Animatable.View>
 
-      return (
-        <View style={styles.container}>
-          <Animatable.View animation="fadeInLeft" delay={500} style={styles.containerHeader}>
-                <Text style={styles.message}>
-                    Listagem de projetos cadastrados
-                </Text>
-            </Animatable.View>
-          <FlatList
-            data={projetos}
-            renderItem={renderProjetos}
-            keyExtractor={(item, index) => index.toString()}
-            contentContainerStyle={styles.cardList}
-          />
+           <Animatable.View animation="fadeInUp" delay={500} style={styles.containerCardsProjetos}>
+           <Text style={styles.label}>Projetos</Text>
+             <View style={styles.card}>
+               <Text style={styles.labelCard}>Abertos</Text>
+               <Text style={styles.text}>{projetos.Aberto}</Text>
+             </View>
+             <View style={styles.card}>
+               <Text style={styles.labelCard}>Cancelados</Text>
+               <Text style={styles.text}>{projetos.Cancelado}</Text>
+             </View>
+             <View style={styles.card}>
+               <Text style={styles.labelCard}>Finalizados</Text>
+               <Text style={styles.text}>{projetos.Finalizado}</Text>
+             </View>
+             <View style={styles.card}>
+               <Text style={styles.labelCard}>Iniciados</Text>
+               <Text style={styles.text}>{projetos.Iniciado}</Text>
+             </View>
+             <View style={styles.card}>
+               <Text style={styles.labelCard}>Pausados</Text>
+               <Text style={styles.text}>{projetos.Pausado}</Text>
+             </View>
+           </Animatable.View>
+         </View>
         </View>
-      );
 
+    );
 };
 
 const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#38a69d'
-  },
-  containerHeader: {
-    marginTop: '5%',
-    marginBottom: '5%',
-    paddingStart: '5%'
-  },
-  message: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'center'
-  },
   title: {
-    fontSize: 18,
+    fontSize: 35,
     fontWeight: 'bold',
-    marginBottom: 10,
-    borderRadius: 10,
+    color: '#38a69d'
   },
-  cardList: {
-    width: 350,
+  containerMae: {
     backgroundColor: '#fff',
-    flex: 1,
-    padding: 10,
-    alignItems: 'center',
-    borderRadius: 15
+    height: 80,
+    textAlign: 'center',
+    justifyContent: 'flex-end',
   },
+  containerPai: {
+    flex: 1
+  },
+  container: {
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    flex: 1
+  },
+  containerCardsAcoes: {
+    backgroundColor: '#38a69d',
+    padding: 5,
+    flexDirection: 'column',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
+    borderTopLeftRadius: 25
+  },
+  containerCardsProjetos: {
+    flex: 1,
+    backgroundColor: '#38a69d',
+    padding: 5,
+    flexDirection: 'column',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    height: '100%',
+    borderTopRightRadius: 25
+  },
+
   card: {
     backgroundColor: '#fff',
     borderRadius: 8,
@@ -103,34 +141,30 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 4,
     elevation: 4,
-    marginBottom: 10,
-    width: 320,
+    width: width - 250,
+    alignSelf: 'center',
+    alignItems: 'center',
+    margin: 10
   },
-  label: {
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
+  
   text: {
+    fontSize: 35,
+    fontWeight: 'bold',
     marginBottom: 10,
   },
-  buttonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+
+  label: {
+   fontSize: 25,
+   color: '#fff',
+   fontWeight: 'bold',
+   marginTop: 25
   },
-  button: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    marginLeft: 8,
-  },
-  editButton: {
-    backgroundColor: '#2196F3',
-  },
-  deleteButton: {
-    backgroundColor: '#F44336',
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
+
+  labelCard: {
+   fontSize: 15,
+   fontWeight: 'bold',
+   color: 'black'
+  }
 });
+
+export default Dashboard;
