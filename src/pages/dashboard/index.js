@@ -28,7 +28,10 @@ const Dashboard = () => {
   const token = async () => {
     try {
       AsyncStorage.getItem('userToken', (err, result) => {
-        getDadosDashboard(result)
+        if (result) {
+          getDadosDashboard(result)
+        }
+        
       })
     } catch (e) {
       console.log(e)
@@ -82,13 +85,13 @@ const Dashboard = () => {
           </View>
         </Modal>
 
-        <Animatable.View animation="fadeInDown" delay={200}  style={styles.containerMae}>
+        <View style={styles.containerMae}>
         <Text style={styles.title}>Dashboard</Text>
-        </Animatable.View>
+        </View>
          <View style={styles.container}>
             <Animatable.View animation="fadeInUp" delay={500} style={styles.containerCardsAcoes}>
             <Text style={styles.label}>Ações</Text>
-            <Pressable onPress= {() => setShowModal(!showModal)}>
+            <Pressable onLongPress= {() => setShowModal(!showModal)}>
                <View style={styles.card}>
                  <Text style={styles.labelCard}>Abertos</Text>
                  <Text style={styles.text}>{acoes.Aberto}</Text>
@@ -150,7 +153,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
     fontSize: 35,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#38a69d',
     textAlign: 'center',
     justifyContent: 'flex-end'
   },
@@ -162,7 +165,7 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   containerMae: {
-    backgroundColor: '#38a69d',
+    backgroundColor: '#fff',
     height: 80,
     textAlign: 'center',
     alignItems: 'center',
@@ -177,7 +180,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'nowrap',
     flex: 1,
-    width: '100%'
+    width: '100%',
+    marginTop: 5
   },
   containerCardsAcoes: {
     flex: 1,
@@ -185,7 +189,8 @@ const styles = StyleSheet.create({
     padding: 5,
     flexDirection: 'column',
     flexWrap: 'nowrap',
-    alignItems: 'center'
+    alignItems: 'center',
+    borderTopLeftRadius: 45
   },
   containerCardsProjetos: {
     flex: 1,
@@ -194,7 +199,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     flexWrap: 'nowrap',
     alignItems: 'center',
-    height: '100%'
+    height: '100%',
+    borderTopRightRadius: 45
   },
 
   card: {

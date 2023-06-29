@@ -26,13 +26,16 @@ const Perfil = () => {
       getUserDatails();
      
     };
+
+    
+    getImagePerfil();
+    
     obterPermissao();
   }, []);
 
   const {logout} = useContext(AuthContext);
-  const [imageUri, setImageUri] = useState();
+  const [image, setImage] = useState();
   const [userDatails, setUserDatails] = useState({});
-  const [refreshing, setRefreshing] = React.useState(false);
 
   const getUserDatails = async () => {
     AsyncStorage.getItem('userInfo', (err, result) => {
@@ -41,24 +44,31 @@ const Perfil = () => {
     })
   };
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    wait(2000).then(() => setRefreshing(false));
-  }, []);
+  const getImagePerfil = async () => {
+    AsyncStorage.getItem('imagePerfil', (err, result) => {
+      setImage(result)
+    })
+  };
 
   const obterPermissao = async () => {
     const {granted} = await ImagePicker.requestCameraPermissionsAsync();
 
     if (!granted) {
-      alert('Você precisa dar permissão!')
+      alert('Você precisa da permissão para alterar a imagem de perfil.')
     }
   };
 
-  const obterImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync();
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
 
-    if(!result.canceled){
-      setImageUri(result.uri)
+    if (!result.canceled) {
+      AsyncStorage.setItem('imagePerfil', result.assets[0].uri);
+      setImage(result.assets[0].uri);
     }
   };
   
@@ -68,12 +78,17 @@ const Perfil = () => {
         <Text style={styles.title}>Perfil</Text>
       </View>
       <View style={styles.containerImage}>
-        {imageUri && <Image source={{uri: imageUri}} style={styles.image}/> ||
+        {image && <Image source={{uri: image}} style={styles.image}/> ||
         <TouchableOpacity
-          onPress={ () => obterImage()}>
+          onPress={pickImage}>
             <MaterialCommunityIcons name="image-edit-outline" color={'#38a69d'} size={50}/>
-        </TouchableOpacity>}
+        </TouchableOpacity> }
       </View>
+      {image &&
+        <TouchableOpacity
+          onPress={pickImage}>
+            <MaterialCommunityIcons name="image-edit-outline" color={'#fff'} size={30}/>
+        </TouchableOpacity> }
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{userDatails.username}</Text>
         <Text style={styles.email}>{userDatails.email}</Text>
@@ -107,7 +122,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
     marginTop: 150,
-    marginBottom: 150,
+    marginBottom: 125,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.4,

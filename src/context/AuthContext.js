@@ -1,5 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
 
+import { Alert } from "react-native";
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
 import { BASE_URL } from "../config";
@@ -9,7 +11,12 @@ export const AuthContext = createContext();
 export const AuthProvider = ({children}) => {
     const [isLoading, setIsLoading] = useState(false);
     const [userToken, setUserToken] = useState('');
-    const [userInfo, setUserInfo] = useState(null)
+    const [userInfo, setUserInfo] = useState(null);
+
+    const createAlert = () =>
+    Alert.alert('Erro ao acessar', 'Usuário ou senha inválidos!', [
+      {text: 'OK', onPress: () => console.log('OK Pressed')},
+    ]);
 
     const login = (username, password) => {
         setIsLoading(true);
@@ -29,7 +36,7 @@ export const AuthProvider = ({children}) => {
             console.log('User Token: ' + userInfo.data.accessToken);
         })
         .catch(e => {
-            console.log(`Erro ao logar: ${e}`)
+            createAlert();
         });
 
         setIsLoading(false);
