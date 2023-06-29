@@ -1,5 +1,7 @@
 import React, {useContext, useState} from 'react';
 import { Text, View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; // Certifique-se de ter o pacote de ícones instalado
+
 
 import * as Animatable from 'react-native-animatable';
 import { AuthContext } from '../../context/AuthContext';
@@ -8,6 +10,12 @@ export default function SignIn ({navigation}) {
     const [user, setUser] = useState('');
     const [password, setPassword] = useState('')
     const {login} = useContext(AuthContext);
+    // const [secure, setSecure] = useState(props.secure);
+    const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+      };
 
     return (
         <View style={styles.container}>
@@ -18,20 +26,36 @@ export default function SignIn ({navigation}) {
             </Animatable.View>
 
             <Animatable.View animation="fadeInUp" style={styles.containerForm}>
-                <Text style={styles.title}>E-mail</Text>
+                <Text style={styles.title}>Usuário</Text>
+                
                 <TextInput
-                placeholder='Digite seu usuário...'
+                placeholder='Digite seu usuário...'     
                 style={styles.input}
                 value={user}
                 onChangeText={text => setUser(text)}/>
                 
                 <Text style={styles.title}>Senha</Text>
-                <TextInput
-                placeholder='Sua senha... '
-                secureTextEntry={true}
-                style={styles.input}
-                value={password}
-                onChangeText={text => setPassword(text)}/>
+
+                <View style={styles.containerSenha}>
+                    <TextInput
+                      style={styles.inputSenha}
+                      placeholder="Digite sua senha"
+                      secureTextEntry={!showPassword}
+                      value={password}
+                      onChangeText={text => setPassword(text)}
+                    />
+
+                    <TouchableOpacity
+                      style={styles.iconContainer}
+                      onPress={togglePasswordVisibility}
+                    >
+                      <Ionicons
+                        name={showPassword ? 'eye' : 'eye-off'}
+                        size={24}
+                        color="#333"
+                      />
+                    </TouchableOpacity>
+                </View>
 
                 <TouchableOpacity style={styles.button} onPress={ () => {
                     login(user, password)
@@ -49,6 +73,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#38a69d'
+    },
+
+    containerSenha: {
+        flexDirection: 'row',
     },
     
     containerHeader: {
@@ -81,7 +109,16 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         height: 40,
         marginBottom: 12,
-        fontSize: 16
+        fontSize: 16,
+        width: '100%'
+    },
+
+    inputSenha: {
+        borderBottomWidth: 1,
+        height: 40,
+        marginBottom: 12,
+        fontSize: 16,
+        width: '95%'
     },
 
     button: {
@@ -98,5 +135,9 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 18,
         fontWeight: 'bold'
-    }
+    },
+
+    iconContainer: {
+      padding: 5
+    },
 })

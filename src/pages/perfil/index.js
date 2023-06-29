@@ -1,22 +1,50 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import { View } from "react-native-animatable";
-import { Image, StyleSheet, Text } from "react-native";
-
-import { TouchableOpacity } from "react-native-web";
+import { Image, StyleSheet, Text, TouchableOpacity, RefreshControl } from "react-native";
 
 import { AuthContext } from "../../context/AuthContext";
 
 import * as ImagePicker from 'expo-image-picker';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import * as Animatable from 'react-native-animatable';
 
 const Tab = createBottomTabNavigator();
 
-const Perfil = () => {
-  const {logout} = useContext(AuthContext);
+const wait = (timeout) => {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+}
 
-  const userDatails = JSON.parse(localStorage.userInfo);
+const Perfil = () => {
+  useEffect(() => {
+    if (!userDatails.x) {
+      getUserDatails();
+     
+    };
+    obterPermissao();
+  }, []);
+
+  const {logout} = useContext(AuthContext);
+  const [imageUri, setImageUri] = useState();
+  const [userDatails, setUserDatails] = useState({});
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const getUserDatails = async () => {
+    AsyncStorage.getItem('userInfo', (err, result) => {
+      console.log(JSON.parse(result).data.username)
+      setUserDatails(JSON.parse(result).data)
+    })
+  };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
 
   const obterPermissao = async () => {
     const {granted} = await ImagePicker.requestCameraPermissionsAsync();
@@ -24,23 +52,31 @@ const Perfil = () => {
     if (!granted) {
       alert('Você precisa dar permissão!')
     }
-  }
+  };
 
-  useEffect(() => {
-    obterPermissao()
-  }, []);
+  const obterImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync();
+
+    if(!result.canceled){
+      setImageUri(result.uri)
+    }
+  };
   
   return (
-    <View style={styles.container}>
+    <Animatable.View animation="fadeInLeft" delay={500} style={styles.container}>
       <View style={styles.containerTitle}>
         <Text style={styles.title}>Perfil</Text>
       </View>
       <View style={styles.containerImage}>
-          <Image source={require("../../../assets/5907.jpg")} />
+        {imageUri && <Image source={{uri: imageUri}} style={styles.image}/> ||
+        <TouchableOpacity
+          onPress={ () => obterImage()}>
+            <MaterialCommunityIcons name="image-edit-outline" color={'#38a69d'} size={50}/>
+        </TouchableOpacity>}
       </View>
       <View style={styles.infoContainer}>
-        <Text style={styles.name}>{userDatails.data.username}</Text>
-        <Text style={styles.email}>{userDatails.data.email}</Text>
+        <Text style={styles.name}>{userDatails.username}</Text>
+        <Text style={styles.email}>{userDatails.email}</Text>
       </View>
       <TouchableOpacity 
         style={styles.button}
@@ -49,7 +85,7 @@ const Perfil = () => {
             Sair
         </Text>
       </TouchableOpacity>
-    </View>
+    </Animatable.View>
   );
 };
 
@@ -91,6 +127,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 4,
   },
+  image: {
+    width: 200,
+    height: 200,
+    borderRadius: 100
+  },
   infoContainer: {
     marginTop: 30,
     alignItems: 'center',
@@ -113,7 +154,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     width: '38%',
     alignSelf: 'center',
-    bottom: '10%',
+    bottom: '2%',
     alignItems: 'center',
     justifyContent: 'center'
   },

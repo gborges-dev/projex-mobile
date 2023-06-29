@@ -1,1 +1,1 @@
-export const BASE_URL = 'http://localhost:8080/api';
+export const BASE_URL = 'https://projex-back.blacksea-67af2500.brazilsouth.azurecontainerapps.io/api/';

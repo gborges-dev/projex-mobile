@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 
 import * as Animatable from 'react-native-animatable';

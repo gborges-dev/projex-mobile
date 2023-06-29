@@ -13,7 +13,7 @@ export const AuthProvider = ({children}) => {
 
     const login = (username, password) => {
         setIsLoading(true);
-        axios.post(`${BASE_URL}/auth/signin`, {
+        axios.post(`${BASE_URL}auth/signin`, {
             username,
             password
         })
